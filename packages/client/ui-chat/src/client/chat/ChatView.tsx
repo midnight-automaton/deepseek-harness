@@ -69,7 +69,9 @@ export function ChatView({
   const nodeStore = useChat(s => s.nodes)
   const latestUserSeqs: number[] = []
   for (let index = order.length - 1; index >= 0 && latestUserSeqs.length < 2; index -= 1) {
-    const node = nodeStore.get(order[index]!)
+    const key = order[index]
+    if (key === undefined) continue
+    const node = nodeStore.get(key)
     if (node?.kind === 'user') latestUserSeqs.unshift(node.anchorSeq)
   }
   // Keep row props stable while an existing assistant message streams.

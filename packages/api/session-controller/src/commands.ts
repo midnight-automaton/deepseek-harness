@@ -119,16 +119,16 @@ export class SessionCommandController {
     const result = this.deletionTail.then(async () => {
       const snapshots = await this.ctx.sessionPersistence.list()
       const headers = new Map(snapshots.map(snapshot => [snapshot.header.id, snapshot.header]))
-       // A prior deletion can have removed the log before Workspace cleanup
-       // failed. Archived ids retain the admission gate and identify those
-       // incomplete removals even after their headers are gone.
-       const missingArchived: SessionId[] = []
-       for (const id of this.ctx.workspaceRegistry.archivedSessionIds) {
-         if (!headers.has(id) && await this.ctx.sessionPersistence.stat(id) === undefined) {
-           missingArchived.push(id)
-         }
-       }
-       if (!headers.has(request.sessionId) && !missingArchived.includes(request.sessionId)) {
+      // A prior deletion can have removed the log before Workspace cleanup
+      // failed. Archived ids retain the admission gate and identify those
+      // incomplete removals even after their headers are gone.
+      const missingArchived: SessionId[] = []
+      for (const id of this.ctx.workspaceRegistry.archivedSessionIds) {
+        if (!headers.has(id) && await this.ctx.sessionPersistence.stat(id) === undefined) {
+          missingArchived.push(id)
+        }
+      }
+      if (!headers.has(request.sessionId) && !missingArchived.includes(request.sessionId)) {
         throw new RemoteError('session/not-found', `session "${request.sessionId}" not found`, { sessionId: request.sessionId })
       }
       const children = new Map<SessionId, SessionId[]>()
@@ -147,39 +147,39 @@ export class SessionCommandController {
         order.push(id)
       }
       visit(request.sessionId)
-       // Confirmation covers the full lineage. Archive before stopping work so
+      // Confirmation covers the full lineage. Archive before stopping work so
       // a wake cannot admit another turn during teardown.
       for (const sessionId of order) {
-         if (!headers.has(sessionId)) continue
+        if (!headers.has(sessionId)) continue
         const alreadyArchived = this.ctx.workspaceRegistry.archivedSessionIds.includes(sessionId)
         await this.ctx.workspaceRegistry.archiveSession(sessionId, { stopActivity: true })
         // Archiving an already archived member is idempotent and does not
         // issue stop requests; deletion still needs to stop its live work.
         if (alreadyArchived) await this.ctx.parallel('workspace/session-stop', { sessionId })
       }
-       const deletedSessionIds: SessionId[] = []
-       for (const sessionId of missingArchived) {
-         await this.agents.stopForDeletion(sessionId)
-         if (this.ctx.sessions.get(sessionId) !== undefined) {
-           throw new RemoteError('session/agent-busy', `session "${sessionId}" is still open`, {
-             reason: 'close the session before deletion',
-           })
-         }
-         await this.ctx.workspaceRegistry.forgetSession(sessionId)
-         this.ctx.emit('api-session/deleted', sessionId)
-         deletedSessionIds.push(sessionId)
-       }
-      for (const sessionId of order) {
-         if (!headers.has(sessionId)) continue
+      const deletedSessionIds: SessionId[] = []
+      for (const sessionId of missingArchived) {
         await this.agents.stopForDeletion(sessionId)
         if (this.ctx.sessions.get(sessionId) !== undefined) {
           throw new RemoteError('session/agent-busy', `session "${sessionId}" is still open`, {
             reason: 'close the session before deletion',
           })
         }
-         // False means another owner already removed the log; its Workspace
-         // references still need the same cleanup and deletion notice.
-         await this.ctx.sessionPersistence.delete(sessionId)
+        await this.ctx.workspaceRegistry.forgetSession(sessionId)
+        this.ctx.emit('api-session/deleted', sessionId)
+        deletedSessionIds.push(sessionId)
+      }
+      for (const sessionId of order) {
+        if (!headers.has(sessionId)) continue
+        await this.agents.stopForDeletion(sessionId)
+        if (this.ctx.sessions.get(sessionId) !== undefined) {
+          throw new RemoteError('session/agent-busy', `session "${sessionId}" is still open`, {
+            reason: 'close the session before deletion',
+          })
+        }
+        // False means another owner already removed the log; its Workspace
+        // references still need the same cleanup and deletion notice.
+        await this.ctx.sessionPersistence.delete(sessionId)
         await this.ctx.workspaceRegistry.forgetSession(sessionId)
         this.ctx.emit('api-session/deleted', sessionId)
         deletedSessionIds.push(sessionId)

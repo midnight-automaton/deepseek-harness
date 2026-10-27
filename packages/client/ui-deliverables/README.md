@@ -9,7 +9,7 @@ English | [中文](README.zh.md)
 
 ## Summary
 
-This package renders the changed-files card a finished turn ends with — the files the turn changed, with the Host's line counts, each opening the turn's review tab on that file — plus cards for explicitly delivered files, and links matching inline-code references in the closing prose so a mentioned file opens in the right Sidebar. Its Session overview section lists unique produced and delivered file paths from the currently loaded turns, newest first, and opens each in the existing right Sidebar. Listed and linked paths come from the recorded summary, successful mutations, and explicit deliveries, never from the prose. Only the shipped Web patch loads this package; removing its cordis.yml entry removes the guidance, cards, and prose links together.
+After a turn, readers can review changed files with Host line counts, open delivered files, and follow inline-code references to files in the right Sidebar. The Session overview lists unique produced and delivered paths from loaded turns, newest first. These paths come from recorded summaries, successful mutations, and explicit deliveries rather than reply prose. Only the shipped Web patch loads this package; removing its cordis.yml entry removes the cards, links, and guidance.
 
 ## Table of Contents
 

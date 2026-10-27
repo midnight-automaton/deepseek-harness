@@ -10,16 +10,12 @@ Desktop product events use the optional [product analytics service](../product-a
 
 ## Summary
 
-Use this package to render a browser chat from recorded Session conversations, including historical images, localized actions, and restored scroll position. Work-details modes control reasoning previews and process visibility without hiding final answers; Verbose keeps completed-turn process rows visible. Local transcript and steering submissions appear immediately, remain in their original surface, and disappear atomically when authoritative Session records arrive, while queued submissions stay outside Chat. The package does not assemble or modify model requests.
-
-File-mention providers receive the viewed Session ID with the closing-turn owner, so links into inherited history can address the fork itself.
-The two most recent recorded text-only user messages offer inline editing. An edit already open retains its draft if a newer message arrives. Sending an edit forks immediately before the original message, submits the replacement in the child Session, and opens that child after admission; the source Session and its later replies remain intact. A transport failure with unknown admission status blocks automatic retry and points to the fork in the sidebar. Messages with attachments or unsupported blocks have no edit action.
-The Sources section in the Session overview lists attachments from currently loaded human messages. Images open in the shared lightbox; pasted text opens its existing right Sidebar original-text tab. The list expands to show every loaded source.
-
+Render recorded Session conversations with historical images, localized actions, and restored scroll position. Work-details modes expose reasoning and process rows without hiding final answers. Local transcript and steering submissions appear immediately and reconcile with authoritative Session records; queued submissions remain outside Chat. Readers can edit either of the two latest eligible text messages and inspect loaded sources in the Session overview. This package does not assemble or modify model requests.
 
 ## Table of Contents
 
 - [Reference previews](#reference-previews)
+- [Message editing](#message-editing)
 - [Hidden Chat rows](#system-prompt-row)
 - [Command and failure rows](#command-and-failure-rows)
 - [Turn token usage](#turn-token-usage)
@@ -36,6 +32,10 @@ The Sources section in the Session overview lists attachments from currently loa
 <a id="reference-previews"></a>
 ## Reference previews
 
+File-mention providers receive the viewed Session ID with the closing-turn owner, so links into inherited history can address the fork itself.
+
+The Sources section in the Session overview lists attachments from currently loaded human messages. Images open in the shared lightbox; pasted text opens its existing right Sidebar original-text tab. The list expands to show every loaded source.
+
 Sent generic-file attachments retain the draft's [file-card radius](../../../docs/ui-radius.md#radius-scale).
 
 Sent composer-generated pasted text appears as a compact title card; opening it reads the durable attachment through the Session controller and shows up to 1 MB of original text in the existing right Sidebar. Ordinary uploaded files retain their filename cards.
@@ -51,6 +51,11 @@ The session-scoped `conversation.chat.user.content` Factory renders only the use
 Standalone Markdown images show contained previews and open the shared image lightbox; local paths resolve against the viewed workspace after settlement. Image file links keep their sidebar activation and show a thumbnail after hover dwell or keyboard focus. Escape dismisses the thumbnail. Failed images retain a localized status and their description; no duplicate-image filtering is applied.
 
 Settings → General → Open chat links in selects the destination for ordinary clicks on Chat HTTP(S) links: In-App Sidebar (default) opens a new right-Sidebar Browser tab, while Default Browser opens an external tab. The setting follows Keyboard shortcuts and is shown only while the Sidebar Browser is available. If the Sidebar Browser is not registered, both choices use the external browser; modified clicks retain native behavior. The `ui-chat.linkOpening` preference persists on the Host for authenticated browsers and stays process-local when settings cannot persist writes. Sent file references and skills confirmed by the message’s logged invocation also open in the right Sidebar. File paths use the viewed Session; skill names resolve through its current input-trigger source. Both use the prose file-link dotted underline on hover or focus. Sessions, directories, and command labels remain non-navigating references.
+
+<a id="message-editing"></a>
+## Message editing
+
+The two most recent recorded text-only user messages offer inline editing. An open edit retains its draft when a newer message arrives. Sending an edit forks immediately before the original message, submits the replacement in the child Session, and opens that child after admission; the source Session and its later replies remain intact. A transport failure with unknown admission status blocks automatic retry and points to the fork in the sidebar. Messages with attachments or unsupported blocks have no edit action.
 
 <a id="system-prompt-row"></a>
 ## Hidden Chat rows

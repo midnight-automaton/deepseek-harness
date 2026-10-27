@@ -9,13 +9,14 @@ English | [中文](README.zh.md)
 
 ## Summary
 
-The right Sidebar: where the docking kit meets this product. It holds one docking surface per session, draws it as one edge-anchored panel in the frame's right column in either of two presentations, puts the expand button and a Session overview control in the conversation header, and owns the navigation controller (`ctx.sidebarRight`), the tab-type registry (`ctx.sidebarRightTabs`), and the Tab domain that tells each open tab how it was navigated to and how long it lives. The overview stays open across interaction elsewhere and has independently collapsible Outputs, Background processes, and Sources seats; each domain plugin supplies its own content and actions. Outputs and Background processes start collapsed while Sources remains visible; the close action shares the first section row to keep the popover short. The popover anchors 14px below the conversation header rule. Resizing below 1360px automatically conceals an open popover while retaining its trigger; the user can reopen it there, and widening restores its prior open and fold state.
+Open a Session's right Sidebar to inspect tabs and an overview of Outputs, Background processes, and Sources. One surface per Session supports normal and fullscreen presentations. The conversation header provides the expand and overview controls. The overview stays open while the user works elsewhere; sections fold independently, and domain plugins supply their content. This package owns tab navigation and the Tab domain.
 
 ## Table of Contents
 
 - [What lives here, and what does not](#what-lives-here-and-what-does-not)
 - [Presentations](#presentations)
 - [The expand button](#the-expand-button)
+- [Session overview](#session-overview)
 - [State](#state)
 - [Extension seats](#extension-seats)
 - [`ctx.sidebarRight`](#ctxsidebarright)
@@ -59,6 +60,11 @@ While the panel is hidden, one button in the conversation header's corner seat (
 The panel takes the conversation's ground colour and content font sizes rather than a raised layer of its own: it is a column of the page, not a card over it.
 
 The root-scoped `rightbar` entry renders the selected Session and background Sessions with initialized `keepMounted` bodies through separate `rightbar.session` subtrees. Each View owns its Session reference. Only the foreground subtree reports a frame track; other subtrees stay hidden without deleting tab state.
+
+<a id="session-overview"></a>
+## Session overview
+
+Outputs and Background processes start collapsed while Sources remains visible; the close action shares the first section row to keep the popover short. The popover anchors 14px below the conversation header rule. Resizing below 1360px automatically conceals an open popover while retaining its trigger; the user can reopen it there, and widening restores its prior open and fold state.
 
 <a id="state"></a>
 ## State

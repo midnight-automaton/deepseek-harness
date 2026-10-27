@@ -573,9 +573,9 @@ class JsonlSessionPersistence extends SessionPersistence {
       if (this.tracker.hasOpenHandle(id)) throw new SessionAlreadyOwnedError(id)
       const current = await this.findLog(id)
       if (current === undefined) return false
-        if ((await this.list()).some(snapshot => snapshot.header.parentSession === id)) {
-          throw new Error(`session "${id}" still has stored child sessions`)
-        }
+      if ((await this.list()).some(snapshot => snapshot.header.parentSession === id)) {
+        throw new Error(`session "${id}" still has stored child sessions`)
+      }
       const entries = await readdir(directory, { withFileTypes: true })
       for (const entry of entries) {
         if (!entry.isFile()) continue
